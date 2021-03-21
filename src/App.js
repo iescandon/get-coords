@@ -8,6 +8,7 @@ const [search, setSearch] = useState("")
 const [address, setAddress] = useState("")
 const [coordinates, setCoordinates] = useState({});
 const [copied, setCopied] = useState(false);
+const [error, setError] = useState(false)
 var myRef = React.createRef();
 
 const handleInputChange = ({ target }) => {
@@ -32,10 +33,18 @@ Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY);
     },
     (error) => {
       console.error(error);
+      setError(true)
     }
   );
   setSearch('');
 };
+
+useEffect(()=>{
+  const errorTimer = setTimeout(() => {
+    setError(false)
+
+  }, 1000);
+},[error])
 
 useEffect(()=>{
   // if (myRef.current) {
@@ -58,7 +67,7 @@ useEffect(()=>{
           event.preventDefault();
           getLatAndLong();
         }}>
-          <input className="address" placeholder="Address" value={search} onChange={(event)=>{
+          <input className="address" value={search} onChange={(event)=>{
             handleInputChange(event);
           }}/><br/>
           {/* <input type="submit" className="submitBtn" value="Submit" /> */}
@@ -68,13 +77,12 @@ useEffect(()=>{
 
         <h2>Address: {address}</h2>
 
-        <CopyToClipboard text={`${coordinates.lat}, ${coordinates.lng}`} onCopy={() => {
-          setCopied(true);
-        }}>
+        <CopyToClipboard text={`${coordinates.lat}, ${coordinates.lng}`} onCopy={() => {setCopied(true)}}>
         <h2>Coordinates: {coordinates.lat ? <span ref={myRef} className="coords">{`${coordinates.lat}, ${coordinates.lng}`}</span> : null}</h2>
         </CopyToClipboard>
 
-        {copied ? <p>Copied to clipboard!</p> : null }
+        {error ? <p>Put a valid address</p> : null}
+        {copied ? <p>Copied to clipboard!</p> : null}
       </div>
     </div>
   );
