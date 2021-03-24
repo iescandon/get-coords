@@ -12,12 +12,13 @@ const [error, setError] = useState(false)
 var myRef = React.createRef();
 
 const handleInputChange = ({ target }) => {
-  if (!search) {
-    setCoordinates({})
-  } 
+  // if (!search) {
+  //   setCoordinates({})
+  // } 
   const { value } = target;
   setSearch(value);
-  setAddress(value);
+  setAddress("");
+  setCoordinates({})
 };
 
 const getLatAndLong = () => {
@@ -30,13 +31,14 @@ Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY);
         lat,
         lng,
       });
+      setAddress(response.results[0].formatted_address);
     },
     (error) => {
       console.error(error);
       setError(true)
     }
   );
-  setSearch('');
+  setSearch("");
 };
 
 useEffect(()=>{
@@ -44,25 +46,27 @@ useEffect(()=>{
     setError(false)
 
   }, 1000);
+  // clearTimeout(errorTimer)
 },[error])
 
 useEffect(()=>{
   // if (myRef.current) {
   //   myRef.current.style.backgroundColor = "yellow";
   // }
-  const timer = setTimeout(() => {
+  const feedbackTimer = setTimeout(() => {
     setCopied(false)
     // if (myRef.current) {
     //   console.log("hi")
     //   myRef.current.style.backgroundColor = "transparent";
     // }
   }, 1000);
+  // clearInterval(feedbackTimer)
 }, [copied]);
 
   return (
-    <div>
-      <div className="">
-        <h1>Get Lat and Lng</h1>
+    <div className="container">
+      <section>
+        <h1 id="title">Get Lat and Lng</h1>
         <form onSubmit={(event) => {
           event.preventDefault();
           getLatAndLong();
@@ -72,18 +76,19 @@ useEffect(()=>{
           }}/><br/>
           {/* <input type="submit" className="submitBtn" value="Submit" /> */}
         </form>
-      </div>
-      <div className="">
-
-        <h2>Address: {address}</h2>
-
+      </section>
+    {address && coordinates ? 
+      <section>
+        <p className="header">Address: <span className="description">{address}</span></p>
         <CopyToClipboard text={`${coordinates.lat}, ${coordinates.lng}`} onCopy={() => {setCopied(true)}}>
-        <h2>Coordinates: {coordinates.lat ? <span ref={myRef} className="coords">{`${coordinates.lat}, ${coordinates.lng}`}</span> : null}</h2>
+        <p className="header">Coordinates: <span ref={myRef} className="coords description">{`${coordinates.lat}, ${coordinates.lng}`}</span></p>
         </CopyToClipboard>
-
-        {error ? <p>Put a valid address</p> : null}
-        {copied ? <p>Copied to clipboard!</p> : null}
-      </div>
+      </section>
+    : null }
+      <section>
+        {error ? <p className="description red">Put a valid address!</p> : null}
+        {copied ? <p className="description blue">Copied to clipboard!</p> : null}
+      </section>
     </div>
   );
 }
