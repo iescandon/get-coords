@@ -12,9 +12,6 @@ const [error, setError] = useState(false)
 var myRef = React.createRef();
 
 const handleInputChange = ({ target }) => {
-  // if (!search) {
-  //   setCoordinates({})
-  // } 
   const { value } = target;
   setSearch(value);
   setAddress("");
