@@ -4,18 +4,20 @@ import Geocode from 'react-geocode';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 function App() {
-const [search, setSearch] = useState("")
-const [address, setAddress] = useState("")
+const [search, setSearch] = useState("");
+const [input, setInput] = useState("");
+const [address, setAddress] = useState("");
 const [coordinates, setCoordinates] = useState({});
 const [copied, setCopied] = useState(false);
-const [error, setError] = useState(false)
+const [error, setError] = useState(false);
 var myRef = React.createRef();
 
 const handleInputChange = ({ target }) => {
   const { value } = target;
   setSearch(value);
   setAddress("");
-  setCoordinates({})
+  setCoordinates({});
+  setInput(value);
 };
 
 const getLatAndLong = () => {
@@ -32,26 +34,28 @@ Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY);
     },
     (error) => {
       console.error(error);
-      setError(true)
+      setError(true);
     }
   );
+  console.log(search)
+  setInput(search);
   setSearch("");
 };
 
 useEffect(()=>{
   const errorTimer = setTimeout(() => {
-    setError(false)
+    setError(false);
 
   }, 1000);
   // clearTimeout(errorTimer)
-},[error])
+},[error]);
 
 useEffect(()=>{
   // if (myRef.current) {
   //   myRef.current.style.backgroundColor = "yellow";
   // }
   const feedbackTimer = setTimeout(() => {
-    setCopied(false)
+    setCopied(false);
     // if (myRef.current) {
     //   console.log("hi")
     //   myRef.current.style.backgroundColor = "transparent";
@@ -74,14 +78,19 @@ useEffect(()=>{
           {/* <input type="submit" className="submitBtn" value="Submit" /> */}
         </form>
       </section>
-    {address && coordinates ? 
       <section>
+    {input ? 
+      <p className="header">Search: <span className="description">{input}</span></p>
+      : null }
+    {address && coordinates ? 
+      <div>
         <p className="header">Address: <span className="description">{address}</span></p>
         <CopyToClipboard text={`${coordinates.lat}, ${coordinates.lng}`} onCopy={() => {setCopied(true)}}>
         <p className="header">Coordinates: <span ref={myRef} className="coords description">{`${coordinates.lat}, ${coordinates.lng}`}</span></p>
         </CopyToClipboard>
-      </section>
+      </div>
     : null }
+    </section>
       <section>
         {error ? <p className="description red">Put a valid address!</p> : null}
         {copied ? <p className="description blue">Copied to clipboard!</p> : null}
