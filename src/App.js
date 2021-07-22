@@ -24,7 +24,6 @@ const getLatAndLong = () => {
 Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY);
   Geocode.fromAddress(search).then(
     (response) => {
-      console.log(response)
       const { lat, lng } = response.results[0].geometry.location;
       setCoordinates({
         lat,
@@ -33,68 +32,59 @@ Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY);
       setAddress(response.results[0].formatted_address);
     },
     (error) => {
-      console.error(error);
       setError(true);
     }
   );
-  console.log(search)
   setInput(search);
   setSearch("");
 };
 
 useEffect(()=>{
-  const errorTimer = setTimeout(() => {
+  setTimeout(() => {
     setError(false);
-
-  }, 1000);
-  // clearTimeout(errorTimer)
+  }, 2000);
 },[error]);
 
 useEffect(()=>{
-  // if (myRef.current) {
-  //   myRef.current.style.backgroundColor = "yellow";
-  // }
-  const feedbackTimer = setTimeout(() => {
+  setTimeout(() => {
     setCopied(false);
-    // if (myRef.current) {
-    //   console.log("hi")
-    //   myRef.current.style.backgroundColor = "transparent";
-    // }
-  }, 1000);
-  // clearInterval(feedbackTimer)
+  }, 2000);
 }, [copied]);
 
   return (
-    <div className="container">
-      <section>
-        <h1 id="title">Get Lat and Lng</h1>
+    <div className="font-nunito container mx-auto min-h-screen text-center justify-center flex flex-col">
+      <section className="">
+        <h1 className="mb-6 text-4xl md:text-5xl font-bold uppercase text-gray-700" id="">Get Lat & Lng</h1>
         <form onSubmit={(event) => {
           event.preventDefault();
           getLatAndLong();
         }}>
-          <input className="address" value={search} onChange={(event)=>{
+          <input className="w-3/5 mb-6 p-2 rounded shadow focus:outline-none border border-gray-100" value={search} onChange={(event)=>{
             handleInputChange(event);
           }}/><br/>
-          {/* <input type="submit" className="submitBtn" value="Submit" /> */}
         </form>
       </section>
-      <section>
+      <section className="flex flex-col flex-wrap">
     {input ? 
-      <p className="header">Search: <span className="description">{input}</span></p>
+      <p className="mx-3 mb-3 sm:text-lg md:text-xl uppercase font-bold text-gray-700">Search: <span className="capitalize font-normal md:p-2 text-gray-500">{input}</span></p>
       : null }
     {address && coordinates ? 
-      <div>
-        <p className="header">Address: <span className="description">{address}</span></p>
-        <CopyToClipboard text={`${coordinates.lat}, ${coordinates.lng}`} onCopy={() => {setCopied(true)}}>
-        <p className="header">Coordinates: <span ref={myRef} className="coords description">{`${coordinates.lat}, ${coordinates.lng}`}</span></p>
-        </CopyToClipboard>
-      </div>
+    <React.Fragment>
+      <p className="mx-3 mb-3 sm:text-lg md:text-xl uppercase font-bold text-gray-700">Address: <span className="capitalize font-normal md:p-2 text-gray-500">{address}</span></p>
+      <p className="mx-3 mb-3 sm:text-lg md:text-xl uppercase font-bold text-gray-700">Coordinates:{' '}
+      <CopyToClipboard text={`${coordinates.lat}, ${coordinates.lng}`} onCopy={() => {setCopied(true)}}>
+        <span className="capitalize font-normal rounded border border-gray-50 md:p-2 hover:bg-blue-50 md:hover:border-blue-500 cursor-pointer text-gray-500">{`${coordinates.lat}, ${coordinates.lng}`}</span>
+      </CopyToClipboard>
+      </p>
+    </React.Fragment>
     : null }
     </section>
-      <section>
-        {error ? <p className="description red">Put a valid address!</p> : null}
-        {copied ? <p className="description blue">Copied to clipboard!</p> : null}
+      <section className="mt-4 fixed top-0 right-0 m-5">
+        {error ? <p className="p-3 md:p-6 italic sm:text-lg md:text-xl bg-red-500 text-white">Put a valid address!</p> : null}
+        {copied ? <p className="p-3 md:p-6 italic sm:text-lg md:text-xl bg-blue-500 text-white">Copied to clipboard!</p> : null}
       </section>
+      <div>
+</div>
     </div>
   );
 }
